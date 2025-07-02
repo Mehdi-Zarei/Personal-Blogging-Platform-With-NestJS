@@ -6,10 +6,13 @@ import { UserEntity } from "src/user/entities/user.entity";
 import { RedisService } from "src/redis/redis.service";
 import { SmsService } from "src/sms/sms.service";
 import { HttpModule } from "@nestjs/axios";
+import { JwtService } from "@nestjs/jwt";
+import { TokenService } from "./token.service";
+import { HashService } from "./dto/bcrypt.service";
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity]), HttpModule],
   controllers: [AuthController],
-  providers: [AuthService, RedisService, SmsService],
+  providers: [AuthService, RedisService, SmsService, JwtService, TokenService, HashService],
 })
 export class AuthModule {}
