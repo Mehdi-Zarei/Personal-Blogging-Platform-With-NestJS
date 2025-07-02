@@ -8,6 +8,16 @@ export function swaggerConfigInit(app: INestApplication) {
     .setDescription(
       "This is the backend API for a content publishing platform similar to Medium or Virgool, where users can write, publish, and read articles. The API supports features such as user authentication, article management, comments, tags, likes, bookmarks, and more.",
     )
+    .addBearerAuth(
+      {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        name: "Authorization",
+        in: "header",
+      },
+      "accessToken",
+    )
     .build();
 
   const swaggerDocuments = SwaggerModule.createDocument(app, document);
