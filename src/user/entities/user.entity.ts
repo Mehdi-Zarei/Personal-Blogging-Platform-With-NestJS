@@ -12,17 +12,17 @@ export class UserEntity extends BaseEntity {
   @Column({ unique: true })
   phone: string;
 
-  @Column()
-  password: string;
+  @Column({ nullable: true })
+  password?: string;
 
   @Column({ nullable: true })
-  profileImage: string;
+  profileImage?: string;
 
   @Column({ nullable: true })
-  bio: string;
+  bio?: string;
 
   @Column({ nullable: true, enum: ["Male", "Female"] })
-  gender: string;
+  gender?: "Male" | "Female";
 
   @Column({ enum: ["ADMIN", "USER"] })
   role: string;
