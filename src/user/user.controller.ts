@@ -43,7 +43,7 @@ export class UserController {
 
   @UseGuards(AuthGuard)
   @ApiBearerAuth("accessToken")
-  @ApiConsumes(SwaggerConsumes.JSON)
+  @ApiConsumes(SwaggerConsumes.JSON, SwaggerConsumes.FORM)
   @ApiOperation({ summary: "User Can Update Their Profile." })
   @Patch()
   updateProfile(@Req() req: Request, @Body() updateUserDto: UpdateUserDto) {
