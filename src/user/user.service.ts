@@ -1,26 +1,79 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { UserEntity } from "./entities/user.entity";
+import { Repository } from "typeorm";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { HashService } from "src/auth/dto/bcrypt.service";
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+
+    private readonly hashService: HashService,
+  ) {}
+
+  async getAll(page: number, limit: number) {
+    const [users, total] = await this.userRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { createdAt: "DESC" },
+    });
+
+    if (total === 0) {
+      throw new NotFoundException("کاربری یافت نشد.");
+    }
+
+    return {
+      data: users,
+      total,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async getOne(id: number) {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException("کاربری یافت نشد.");
+    }
+
+    return { user };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async toggleBanStatus(id: number) {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException("کاربر یافت نشد.");
+    }
+
+    user.isRestrict = !user.isRestrict;
+
+    await this.userRepository.save(user);
+
+    return {
+      message: user.isRestrict ? " کاربر با موفقیت بن شد." : "بن کاربر با موفقیت برداشته شد. ",
+    };
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  async updateProfile(userId: number, updateUserDto: UpdateUserDto) {
+    const { name, email, gender, bio, password } = updateUserDto;
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    const user = await this.userRepository.findOneBy({ id: userId });
+
+    if (!user) {
+      throw new NotFoundException("کاربر یافت نشد.");
+    }
+
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (gender) user.gender = gender;
+    if (bio) user.bio = bio;
+    if (password) user.password = await this.hashService.hashData(password);
+
+    await this.userRepository.save(user);
+
+    return { message: "پروفایل شما با موفقیت آپدیت شد." };
   }
 }
