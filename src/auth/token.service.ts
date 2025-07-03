@@ -8,7 +8,7 @@ export class TokenService {
   createAccessToken(payload: any) {
     const token = this.jwtService.sign(payload, {
       secret: process.env.ACCESS_TOKEN_SECRET,
-      expiresIn: "15m",
+      expiresIn: "30d", //TODO 15m
     });
     return token;
   }
