@@ -5,10 +5,12 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { swaggerConfigInit } from "./config/swagger.config";
 import * as cookieParser from "cookie-parser";
+import { ValidationPipe } from "@nestjs/common";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser(process.env.COOKIE_SECRET)); //todo
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   swaggerConfigInit(app);
 
   const { PORT } = process.env;
