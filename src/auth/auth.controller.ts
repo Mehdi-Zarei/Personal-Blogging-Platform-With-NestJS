@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Param, HttpCode, UseGuards, Req, Res, UnauthorizedException } from "@nestjs/common";
+import { Controller, Get, Post, Body, HttpCode, UseGuards, Req, UnauthorizedException } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { OtpDto, RegisterDto, VerifyOtpDto } from "./dto/auth.dto";
-import { ApiBearerAuth, ApiConsumes, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { SwaggerConsumes } from "src/common/enums/swaggerConsumes.enum";
 import { AuthGuard } from "src/common/guards/auth.guard";
 import { Request } from "express";
@@ -11,6 +11,7 @@ import { Request } from "express";
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiOperation({ summary: "send OTP" })
   @ApiConsumes(SwaggerConsumes.FORM, SwaggerConsumes.JSON)
   @HttpCode(200)
   @Post("/send")
@@ -18,6 +19,7 @@ export class AuthController {
     return this.authService.send(otpDto);
   }
 
+  @ApiOperation({ summary: "Verify OTP" })
   @ApiConsumes(SwaggerConsumes.FORM, SwaggerConsumes.JSON)
   @HttpCode(200)
   @Post("/verify")
@@ -25,12 +27,14 @@ export class AuthController {
     return this.authService.verify(verifyOtpDto);
   }
 
+  @ApiOperation({ summary: "Register Users" })
   @ApiConsumes(SwaggerConsumes.FORM, SwaggerConsumes.JSON)
   @Post("/register")
   register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
+  @ApiOperation({ summary: "Get User Profile" })
   @ApiBearerAuth("accessToken")
   @UseGuards(AuthGuard)
   @Get("/me")
@@ -47,6 +51,10 @@ export class AuthController {
     };
   }
 
+  @ApiOperation({
+    summary: "Get New AccessToken",
+    description: "In this route, the refresh token must be sent via cookies, not in the headers. The cookie named refreshToken is stored as HttpOnly in the browser and must be included with the request.",
+  })
   @Get("/refresh-token")
   refreshToken(@Req() req: Request) {
     const token = req.cookies?.refreshToken;
@@ -57,6 +65,7 @@ export class AuthController {
     return this.authService.refreshToken(token);
   }
 
+  @ApiOperation({ summary: "Logout" })
   @ApiBearerAuth("accessToken")
   @UseGuards(AuthGuard)
   @Post("/logout")
