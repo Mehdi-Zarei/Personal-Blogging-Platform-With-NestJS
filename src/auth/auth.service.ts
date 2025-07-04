@@ -84,7 +84,7 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-    const { name, phone, email, password, gender, bio, profileImage } = registerDto;
+    const { name, phone, email, password, gender, bio } = registerDto;
 
     const isUserExist = await this.userRepository.findOne({ where: [{ phone }, { email }] });
     if (isUserExist) {
@@ -106,7 +106,6 @@ export class AuthService {
       gender,
       isRestrict: false,
       role: isFirstUser ? "ADMIN" : "USER",
-      profileImage,
     });
     await this.userRepository.save(newUser);
 
