@@ -4,6 +4,9 @@ import { UserEntity } from "./entities/user.entity";
 import { Repository } from "typeorm";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { HashService } from "src/auth/dto/bcrypt.service";
+import * as fs from "fs";
+import * as path from "path";
+import { UploadAvatarDto } from "./dto/upload-avatar.dto";
 
 @Injectable()
 export class UserService {
@@ -75,5 +78,25 @@ export class UserService {
     await this.userRepository.save(user);
 
     return { message: "پروفایل شما با موفقیت آپدیت شد." };
+  }
+
+  async uploadAvatar(userId: number, file: Express.Multer.File) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new NotFoundException("کاربر یافت نشد.");
+    }
+
+    if (user.profileImage) {
+      const oldPath = path.join(`public/${user.profileImage}`);
+
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+    }
+    console.log(file.path);
+    user.profileImage = file.path.slice(7);
+    await this.userRepository.save(user);
+
+    return { message: "عکس پروفایل با موفقیت آپلود شد." };
   }
 }
