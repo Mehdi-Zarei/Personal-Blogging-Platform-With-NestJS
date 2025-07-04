@@ -7,6 +7,7 @@ import { AuthGuard } from "src/common/guards/auth.guard";
 import { Roles } from "src/common/decorators/roles.decorator";
 import { SwaggerConsumes } from "src/common/enums/swaggerConsumes.enum";
 import { PaginationDto } from "src/common/dto/pagination.dto";
+
 @ApiTags("Category")
 @Controller("category")
 export class CategoryController {
