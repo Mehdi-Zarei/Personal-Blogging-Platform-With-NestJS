@@ -50,15 +50,6 @@ export class RegisterDto {
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({
-    example: "profile.jpg",
-    description: "آدرس تصویر پروفایل",
-    required: false,
-  })
-  profileImage?: string;
-
-  @IsOptional()
-  @IsString()
   @Length(10, 200, { message: "بیوگرافی باید حداقل 10 و حداکثر 200 کاراکتر باشد." })
   @ApiPropertyOptional({
     example: "من یک توسعه‌دهنده هستم.",
