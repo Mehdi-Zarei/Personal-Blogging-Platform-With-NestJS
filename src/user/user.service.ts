@@ -6,7 +6,6 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { HashService } from "src/auth/dto/bcrypt.service";
 import * as fs from "fs";
 import * as path from "path";
-import { UploadAvatarDto } from "./dto/upload-avatar.dto";
 
 @Injectable()
 export class UserService {
@@ -87,16 +86,38 @@ export class UserService {
     }
 
     if (user.profileImage) {
-      const oldPath = path.join(`public/${user.profileImage}`);
+      const filename = path.basename(user.profileImage);
+      const oldPath = path.join("public/images/users-profile", filename);
 
       if (fs.existsSync(oldPath)) {
         fs.unlinkSync(oldPath);
       }
     }
-    console.log(file.path);
-    user.profileImage = file.path.slice(7);
+
+    user.profileImage = `${process.env.DOMAIN}/${file.path.slice(7)}`;
     await this.userRepository.save(user);
 
     return { message: "عکس پروفایل با موفقیت آپلود شد." };
+  }
+
+  async removeAvatar(userId: number) {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new NotFoundException("کاربر یافت نشد.");
+    }
+
+    if (user.profileImage === "null") {
+      throw new NotFoundException("پروفایل شما فاقد عکس می باشد.");
+    }
+
+    const oldPath = path.join(`public/${user.profileImage}`);
+    if (fs.existsSync(oldPath)) {
+      fs.unlinkSync(oldPath);
+    }
+
+    user.profileImage = "null";
+    await this.userRepository.save(user);
+
+    return { message: "عکس پروفایل شما با موفقیت حذف گردید." };
   }
 }
