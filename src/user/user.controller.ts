@@ -1,8 +1,8 @@
-import { Controller, Body, Get, UseGuards, Query, DefaultValuePipe, ParseIntPipe, Param, Patch, Req, Post, UseInterceptors, UploadedFile, HttpCode } from "@nestjs/common";
+import { Controller, Body, Get, UseGuards, Query, DefaultValuePipe, ParseIntPipe, Param, Patch, Req, Post, UseInterceptors, UploadedFile, HttpCode, Delete } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { AuthGuard } from "src/common/guards/auth.guard";
 import { Roles } from "src/common/decorators/roles.decorator";
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { Request } from "express";
 import { SwaggerConsumes } from "src/common/enums/swaggerConsumes.enum";
@@ -67,5 +67,14 @@ export class UserController {
     const userId = req.user!.id;
 
     return this.userService.uploadAvatar(userId, file);
+  }
+
+  @ApiOperation({ summary: "Remove profile avatar." })
+  @ApiBearerAuth("accessToken")
+  @UseGuards(AuthGuard)
+  @Delete("remove-avatar")
+  removeAvatar(@Req() req: Request) {
+    const userId = req.user!.id;
+    return this.userService.removeAvatar(userId);
   }
 }
