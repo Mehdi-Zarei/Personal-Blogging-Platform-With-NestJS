@@ -3,7 +3,7 @@ import { ArticleService } from "./article.service";
 import { CreateArticleDto } from "./dto/create-article.dto";
 import { UpdateArticleDto } from "./dto/update-article.dto";
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
-import { AuthGuard } from "src/common/guards/auth.guard";
+import { CustomAuthGuard } from "src/common/guards/auth.guard";
 import { SwaggerConsumes } from "src/common/enums/swaggerConsumes.enum";
 import { Request } from "express";
 import { PaginationDto } from "src/common/dto/pagination.dto";
@@ -15,7 +15,7 @@ import { multerConfig } from "src/upload/multer.config";
 export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @ApiConsumes(SwaggerConsumes.MULTIPART)
   @ApiOperation({ summary: "Create Article" })
   @ApiBearerAuth("accessToken")
@@ -36,7 +36,7 @@ export class ArticleController {
   }
 
   @ApiBearerAuth("accessToken")
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @ApiOperation({ summary: "User Can Get Their Articles." })
   @Get("/my-blogs")
   myBlogs(@Req() req: Request) {
@@ -45,7 +45,7 @@ export class ArticleController {
   }
 
   @ApiBearerAuth("accessToken")
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @ApiOperation({ summary: "User Can Update Their Articles." })
   @ApiConsumes(SwaggerConsumes.FORM)
   @Patch(":id")
@@ -55,7 +55,7 @@ export class ArticleController {
   }
 
   @ApiBearerAuth("accessToken")
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @ApiOperation({ summary: "User Can Remove Their Articles." })
   @Delete(":id")
   remove(@Param("id", ParseIntPipe) id: number, @Req() req: Request) {
@@ -63,7 +63,7 @@ export class ArticleController {
     return this.articleService.remove(id, userId);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @ApiBearerAuth("accessToken")
   @ApiOperation({ summary: "User Can Like/Unlike Articles." })
   @Put("like/:id")
@@ -72,7 +72,7 @@ export class ArticleController {
     return this.articleService.likeToggle(id, userId);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @ApiBearerAuth("accessToken")
   @ApiOperation({ summary: "User Can Save/Unsave Articles." })
   @Put("bookmark/:id")
