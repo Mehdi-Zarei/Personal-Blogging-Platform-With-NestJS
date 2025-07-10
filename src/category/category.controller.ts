@@ -3,7 +3,7 @@ import { CategoryService } from "./category.service";
 import { CreateCategoryDto } from "./dto/create-category.dto";
 import { UpdateCategoryDto } from "./dto/update-category.dto";
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
-import { AuthGuard } from "src/common/guards/auth.guard";
+import { CustomAuthGuard } from "src/common/guards/auth.guard";
 import { Roles } from "src/common/decorators/roles.decorator";
 import { SwaggerConsumes } from "src/common/enums/swaggerConsumes.enum";
 import { PaginationDto } from "src/common/dto/pagination.dto";
@@ -13,7 +13,7 @@ import { PaginationDto } from "src/common/dto/pagination.dto";
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @Roles("ADMIN")
   @ApiConsumes(SwaggerConsumes.FORM)
   @ApiBearerAuth("accessToken")
@@ -37,7 +37,7 @@ export class CategoryController {
     return this.categoryService.findOne(id);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @Roles("ADMIN")
   @ApiOperation({ summary: "Find and update category." })
   @ApiBearerAuth("accessToken")
@@ -47,7 +47,7 @@ export class CategoryController {
     return this.categoryService.update(id, updateCategoryDto);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @Roles("ADMIN")
   @ApiOperation({ summary: "remove category." })
   @ApiBearerAuth("accessToken")

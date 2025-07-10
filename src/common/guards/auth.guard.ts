@@ -7,7 +7,7 @@ import { UserEntity } from "src/user/entities/user.entity";
 import { Repository } from "typeorm";
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class CustomAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private reflector: Reflector,

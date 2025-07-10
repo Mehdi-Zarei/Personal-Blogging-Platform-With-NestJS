@@ -1,6 +1,6 @@
 import { Controller, Body, Get, UseGuards, Query, DefaultValuePipe, ParseIntPipe, Param, Patch, Req, Post, UseInterceptors, UploadedFile, HttpCode, Delete } from "@nestjs/common";
 import { UserService } from "./user.service";
-import { AuthGuard } from "src/common/guards/auth.guard";
+import { CustomAuthGuard } from "src/common/guards/auth.guard";
 import { Roles } from "src/common/decorators/roles.decorator";
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { UpdateUserDto } from "./dto/update-user.dto";
@@ -15,7 +15,7 @@ import { UploadAvatarDto } from "./dto/upload-avatar.dto";
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @Roles("ADMIN")
   @ApiBearerAuth("accessToken")
   @ApiOperation({ summary: "Admin can get all users with pagination(without password)." })
@@ -26,7 +26,7 @@ export class UserController {
     return this.userService.getAll(page, limit);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @Roles("ADMIN")
   @ApiBearerAuth("accessToken")
   @ApiOperation({ summary: "Admin can get main user." })
@@ -35,7 +35,7 @@ export class UserController {
     return this.userService.getOne(id);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @Roles("ADMIN")
   @ApiBearerAuth("accessToken")
   @Patch(":id")
@@ -44,7 +44,7 @@ export class UserController {
     return this.userService.toggleBanStatus(id);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @ApiBearerAuth("accessToken")
   @ApiConsumes(SwaggerConsumes.FORM)
   @ApiOperation({ summary: "User Can Update Their Profile." })
@@ -60,7 +60,7 @@ export class UserController {
   @ApiConsumes(SwaggerConsumes.MULTIPART)
   @ApiBody({ type: UploadAvatarDto })
   @HttpCode(200)
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @UseInterceptors(FileInterceptor("profileImage", multerConfig("public/images/users-profile/", 2, [".jpg", ".jpeg", ".png"])))
   @Post("upload-avatar")
   uploadAvatar(@Req() req: Request, @UploadedFile() file: Express.Multer.File) {
@@ -71,7 +71,7 @@ export class UserController {
 
   @ApiOperation({ summary: "Remove profile avatar." })
   @ApiBearerAuth("accessToken")
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @Delete("remove-avatar")
   removeAvatar(@Req() req: Request) {
     const userId = req.user!.id;

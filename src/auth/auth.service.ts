@@ -153,4 +153,18 @@ export class AuthService {
 
     return { message: "با موفقیت از حساب کاربری خود خارج شدید." };
   }
+
+  async findOrCreateUserByGoogleEmail({ email, name, profileImage }: { email: string; name: string; profileImage?: string }) {
+    let user = await this.userRepository.findOneBy({ email });
+    if (!user) {
+      user = this.userRepository.create({ email, name, role: "USER", profileImage });
+    }
+
+    await this.userRepository.save(user);
+
+    const accessToken = this.tokenService.createAccessToken({ id: user.id, role: user.role });
+    const refreshToken = this.tokenService.createRefreshToken({ id: user.id, role: user.role });
+
+    return { accessToken, refreshToken };
+  }
 }

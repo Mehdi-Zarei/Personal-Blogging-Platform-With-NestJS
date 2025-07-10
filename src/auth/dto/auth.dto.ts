@@ -36,9 +36,7 @@ export class RegisterDto {
   @ApiPropertyOptional({ example: "user@example.com", description: "ایمیل معتبر کاربر" })
   email?: string;
 
-  @IsPhoneNumber("IR", {
-    message: "شماره تلفن باید 11 رقم داشته باشد و با 09 شروع شود.",
-  })
+  @IsPhoneNumber("IR", { message: "شماره تلفن باید 11 رقم داشته باشد و با 09 شروع شود." })
   @IsNotEmpty()
   @ApiProperty({ example: "09123456789", description: "شماره موبایل با کد ایران" })
   phone: string;

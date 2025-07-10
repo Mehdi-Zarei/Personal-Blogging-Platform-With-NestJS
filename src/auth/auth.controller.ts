@@ -3,8 +3,9 @@ import { AuthService } from "./auth.service";
 import { OtpDto, RegisterDto, VerifyOtpDto } from "./dto/auth.dto";
 import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { SwaggerConsumes } from "src/common/enums/swaggerConsumes.enum";
-import { AuthGuard } from "src/common/guards/auth.guard";
 import { Request } from "express";
+import { AuthGuard } from "@nestjs/passport";
+import { CustomAuthGuard } from "src/common/guards/auth.guard";
 
 @ApiTags("Auth")
 @Controller("/api/auth")
@@ -36,7 +37,7 @@ export class AuthController {
 
   @ApiOperation({ summary: "Get User Profile" })
   @ApiBearerAuth("accessToken")
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @Get("/me")
   getMe(@Req() req: Request) {
     const user = req.user as { name: string; email?: string; phone: string; profileImage?: string; bio?: string; gender?: string };
@@ -61,17 +62,32 @@ export class AuthController {
     if (!token) {
       throw new UnauthorizedException("لطفا وارد حساب کاربری خود شوید.");
     }
-
     return this.authService.refreshToken(token);
   }
 
   @ApiOperation({ summary: "Logout" })
   @ApiBearerAuth("accessToken")
-  @UseGuards(AuthGuard)
+  @UseGuards(CustomAuthGuard)
   @Post("/logout")
   logout(@Req() req: Request) {
     const userId = req.user?.id;
-
     return this.authService.logout(userId!);
+  }
+
+  @ApiOperation({ summary: "Test this route with your browser,not swagger." })
+  @Get("google")
+  @UseGuards(AuthGuard("google"))
+  googleAuth() {}
+
+  @ApiOperation({ summary: "Test this route with your browser,not swagger." })
+  @Get("google/redirect")
+  @UseGuards(AuthGuard("google"))
+  googleAuthRedirect(@Req() req: Request) {
+    const { user } = req.user as any;
+    return this.authService.findOrCreateUserByGoogleEmail({
+      email: user?.email,
+      name: user?.name,
+      profileImage: user?.profileImage,
+    });
   }
 }
