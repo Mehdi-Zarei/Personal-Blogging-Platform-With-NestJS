@@ -60,7 +60,11 @@ export class ArticleService {
 
     const queryBuilder = this.articleRepository.createQueryBuilder("article");
 
-    queryBuilder.leftJoin("article.author", "author").addSelect(["author.name"]).loadRelationCountAndMap("article.likesCount", "article.likes").loadRelationCountAndMap("article.bookmarksCount", "article.bookmarks");
+    queryBuilder
+      .leftJoin("article.author", "author")
+      .addSelect(["author.name"])
+      .loadRelationCountAndMap("article.likesCount", "article.likes")
+      .loadRelationCountAndMap("article.bookmarksCount", "article.bookmarks");
 
     if (search) {
       const keywords = search.split(" ").filter(Boolean);
@@ -212,7 +216,7 @@ export class ArticleService {
   }
 
   async getOne(id: number) {
-    const blog = await this.articleRepository
+    const article = await this.articleRepository
       .createQueryBuilder("article")
       .leftJoin("article.author", "author")
       .addSelect(["author.name"])
@@ -221,10 +225,17 @@ export class ArticleService {
       .where("article.id = :id AND article.status = :status", { id, status: "Publish" })
       .getOne();
 
-    if (!blog) {
+    if (!article) {
       throw new NotFoundException("مقاله‌ای با این شناسه یافت نشد.");
     }
 
-    return blog;
+    const suggestions = await this.articleRepository
+      .createQueryBuilder("article")
+      .where("article.id != :id AND article.status = :status", { id, status: "Publish" })
+      .orderBy("RANDOM()")
+      .limit(3)
+      .getMany();
+
+    return { article, suggestions };
   }
 }
