@@ -4,7 +4,7 @@ import { UserController } from "./user.controller";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UserEntity } from "./entities/user.entity";
 import { JwtService } from "@nestjs/jwt";
-import { HashService } from "src/auth/dto/bcrypt.service";
+import { HashService } from "src/auth/bcrypt.service";
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity])],

@@ -7,7 +7,7 @@ import { RedisService } from "src/redis/redis.service";
 import { randomInt } from "crypto";
 import { SmsService } from "src/sms/sms.service";
 import { TokenService } from "./token.service";
-import { HashService } from "./dto/bcrypt.service";
+import { HashService } from "./bcrypt.service";
 
 @Injectable()
 export class AuthService {
@@ -75,6 +75,7 @@ export class AuthService {
         refreshToken,
       };
     } else {
+      await this.redisService.removeKey(`otp:${phone}`);
       return {
         status: "NOT_REGISTERED",
         redirect: "/api/auth/register",
@@ -154,7 +155,15 @@ export class AuthService {
     return { message: "با موفقیت از حساب کاربری خود خارج شدید." };
   }
 
-  async findOrCreateUserByGoogleEmail({ email, name, profileImage }: { email: string; name: string; profileImage?: string }) {
+  async findOrCreateUserByGoogleEmail({
+    email,
+    name,
+    profileImage,
+  }: {
+    email: string;
+    name: string;
+    profileImage?: string;
+  }) {
     let user = await this.userRepository.findOneBy({ email });
     if (!user) {
       user = this.userRepository.create({ email, name, role: "USER", profileImage });

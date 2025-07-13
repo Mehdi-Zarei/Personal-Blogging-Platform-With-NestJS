@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { UserEntity } from "./entities/user.entity";
 import { Repository } from "typeorm";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { HashService } from "src/auth/dto/bcrypt.service";
+import { HashService } from "src/auth/bcrypt.service";
 import * as fs from "fs";
 import * as path from "path";
 
