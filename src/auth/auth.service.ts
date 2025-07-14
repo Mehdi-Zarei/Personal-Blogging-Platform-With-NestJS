@@ -89,9 +89,9 @@ export class AuthService {
 
     const isUserExist = await this.userRepository.findOne({ where: [{ phone }, { email }] });
     if (isUserExist) {
-      if (isUserExist.phone) {
+      if (isUserExist.phone === phone) {
         throw new UnauthorizedException("این شماره موبایل تکراری می باشد.");
-      } else if (isUserExist.email) {
+      } else if (isUserExist.email === email) {
         throw new UnauthorizedException("این آدرس ایمیل تکراری می باشد.");
       }
     }

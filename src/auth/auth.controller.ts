@@ -40,7 +40,14 @@ export class AuthController {
   @UseGuards(CustomAuthGuard)
   @Get("/me")
   getMe(@Req() req: Request) {
-    const user = req.user as { name: string; email?: string; phone: string; profileImage?: string; bio?: string; gender?: string };
+    const user = req.user as {
+      name: string;
+      email?: string;
+      phone: string;
+      profileImage?: string;
+      bio?: string;
+      gender?: string;
+    };
 
     return {
       name: user.name,
@@ -54,9 +61,10 @@ export class AuthController {
 
   @ApiOperation({
     summary: "Get New AccessToken",
-    description: "In this route, the refresh token must be sent via cookies, not in the headers. The cookie named refreshToken is stored as HttpOnly in the browser and must be included with the request.",
+    description:
+      "In this route, the refresh token must be sent via cookies, not in the headers. The cookie named refreshToken is stored as HttpOnly in the browser and must be included with the request.",
   })
-  @Get("/refresh-token")
+  @Post("/refresh-token")
   refreshToken(@Req() req: Request) {
     const token = req.cookies?.refreshToken;
     if (!token) {
